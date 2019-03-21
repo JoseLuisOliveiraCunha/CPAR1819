@@ -12,7 +12,7 @@ using namespace std;
 
 void OnMult(int m_ar, int m_br);
 void OnMultLine(int m_ar, int m_br);
-void OnMultBlock(int m_ar, int m_br);
+void OnMultBlock(int m_ar, int m_br, int block_size);
 float produtoInterno(float *v1, float *v2, int col);
 void handle_error (int retval);
 void init_papi();
@@ -44,7 +44,7 @@ void OnMult(int m_ar, int m_br)
 		for(j=0; j<m_br; j++)
 			phb[i*m_br + j] = (double)(i+1);
 
-  Time1 = clock();
+	  Time1 = clock();
 
 	for(i=0; i<m_ar; i++)
 	{	for( j=0; j<m_br; j++)
@@ -58,7 +58,7 @@ void OnMult(int m_ar, int m_br)
 	}
 
 
-  Time2 = clock();
+  	Time2 = clock();
 	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
 	cout << st;
 
@@ -135,15 +135,18 @@ void OnMultLine(int m_ar, int m_br)
 
 }
 
-void OnMultBlock(int m_ar, int m_br)
+void OnMultBlock(int m_ar, int m_br, int block_size)
 {
     
 	SYSTEMTIME Time1, Time2;
 	
 	char st[100];
 	double temp;
-	int i, j, k;
+	int i, j, k, w, l, q;
+	int i_base, j_base, k_base;
+	int n_blocks = m_ar / block_size;
 
+	cout << n_blocks << endl;
 	double *pha, *phb, *phc;
 	
 	pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
@@ -158,10 +161,32 @@ void OnMultBlock(int m_ar, int m_br)
 		for(j=0; j<m_br; j++)
 			phb[i*m_br + j] = (double)(i+1);
 
-  Time1 = clock();
+  	Time1 = clock();
 
 
-	//add code
+	for(i = 0; i < n_blocks; i++)
+	{
+		i_base = i * block_size;
+		for(j = 0; j < n_blocks; j++)
+		{
+			j_base = j * block_size;
+			for(k = 0; k < n_blocks; k++)
+			{
+				k_base = k * block_size;
+				for(w = 0; w < block_size; w++)
+				{
+					for(l = 0; l < block_size; l++)
+					{
+						for(q = 0; q < block_size; q++)
+						{
+							phc[(i_base + w)*m_ar + k_base + l] += pha[(i_base + w)*m_ar + j_base + q] * phb[(j_base + q)*m_br + k_base +l];
+						}
+					}
+					
+				}
+			}
+		}
+	}
 
     
 	Time2 = clock();
@@ -217,7 +242,7 @@ int main (int argc, char *argv[])
 {
 
 	char c;
-	int lin, col, nt=1;
+	int lin, col, block_size, nt=1;
 	int op;
 	
 	int EventSet = PAPI_NULL;
@@ -251,8 +276,15 @@ int main (int argc, char *argv[])
 		cin >>op;
 		if (op == 0)
 			break;
-		printf("Dimensions: lins cols ? ");
-   		cin >> lin >> col;
+		if (op < 3){
+			printf("Dimensions: lins cols ? ");
+   			cin >> lin >> col;
+		}
+		else {
+			printf("Dimensions: lins cols block_size ? ");
+   			cin >> lin >> col >> block_size;
+		}
+		
 
 
 
@@ -268,7 +300,7 @@ int main (int argc, char *argv[])
 				OnMultLine(lin, col);
 				break;
 			case 3:
-				OnMultBlock(lin, col);
+				OnMultBlock(lin, col, block_size);
 				break;
 		}
 
