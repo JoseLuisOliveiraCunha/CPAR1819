@@ -30,7 +30,7 @@ void OnMult(int m_ar, int m_br)
 
 	double *pha, *phb, *phc;
 
-  pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
+  	pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	
@@ -81,7 +81,6 @@ void OnMultLine(int m_ar, int m_br)
 	SYSTEMTIME Time1, Time2;
 	
 	char st[100];
-	double temp;
 	int i, j, k;
 
 	double *pha, *phb, *phc;
@@ -106,8 +105,6 @@ void OnMultLine(int m_ar, int m_br)
 
   	Time1 = clock();
 
-
-	//add code
 	for(i=0; i<m_ar; i++)
 	{	for( j=0; j<m_ar; j++)
 		{	
@@ -141,12 +138,10 @@ void OnMultBlock(int m_ar, int m_br, int block_size)
 	SYSTEMTIME Time1, Time2;
 	
 	char st[100];
-	double temp;
 	int i, j, k, w, l, q;
 	int i_base, j_base, k_base;
 	int n_blocks = m_ar / block_size;
 
-	cout << n_blocks << endl;
 	double *pha, *phb, *phc;
 	
 	pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
